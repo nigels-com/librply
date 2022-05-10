@@ -18,27 +18,35 @@ if (CMAKE_COMPILER_IS_GNUCC)
 	endif ()
 endif (CMAKE_COMPILER_IS_GNUCC)
 
+if (LIBRPLY_BUILD_STATIC)
+	set (LIBRPLY_LINK librply_static_lib)
+endif ()
+
+if (LIBRPLY_BUILD_SHARED)
+	set (LIBRPLY_LINK librply_shared_lib)
+endif ()
+
 # Set up dump_vertices executables
 add_executable (dump_vertices ${dump_vertices_src})
-add_dependencies (dump_vertices librply_shared_lib)
-target_link_libraries (dump_vertices librply_shared_lib )
+add_dependencies (dump_vertices ${LIBRPLY_LINK})
+target_link_libraries (dump_vertices ${LIBRPLY_LINK} )
 
 # Set up dump executables
 add_executable (dump ${dump_src})
-add_dependencies (dump librply_shared_lib)
-target_link_libraries (dump librply_shared_lib )
+add_dependencies (dump ${LIBRPLY_LINK})
+target_link_libraries (dump ${LIBRPLY_LINK} )
 
 # Set up convert executables
 add_executable (convert ${convert_src})
-add_dependencies (convert librply_shared_lib)
-target_link_libraries (convert librply_shared_lib )
+add_dependencies (convert ${LIBRPLY_LINK})
+target_link_libraries (convert ${LIBRPLY_LINK} )
 
 # Set up convert executables
 add_executable (sconvert ${sconvert_src})
-add_dependencies (sconvert librply_shared_lib)
-target_link_libraries (sconvert librply_shared_lib )
+add_dependencies (sconvert ${LIBRPLY_LINK})
+target_link_libraries (sconvert ${LIBRPLY_LINK} )
 
 # Set up convert executables
 add_executable (create_ply ${create_ply_src})
-add_dependencies (create_ply librply_shared_lib)
-target_link_libraries (create_ply librply_shared_lib )
+add_dependencies (create_ply ${LIBRPLY_LINK})
+target_link_libraries (create_ply ${LIBRPLY_LINK} )
