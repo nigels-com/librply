@@ -19,6 +19,10 @@
 #include "rply.h"
 #include "rplyfile.h"
 
+#if defined(_MSC_VER)
+#include <windows.h>  /* For utf8 to utf16 filename conversion */
+#endif
+
 /* ----------------------------------------------------------------------
  * Make sure we get our integer types right
  * ---------------------------------------------------------------------- */
@@ -355,11 +359,31 @@ static int ply_read_header_magic(p_ply ply) {
  * ---------------------------------------------------------------------- */
 p_ply ply_open(const char *name, p_ply_error_cb error_cb,
         long idata, void *pdata) {
-    FILE *fp;
+#if defined(_MSC_VER)
+    wchar_t *utf16 = NULL;
+    int len = 0;
+#endif
+    FILE *fp = NULL;
     p_ply ply;
     if (error_cb == NULL) error_cb = ply_error_cb;
     assert(name);
+
+/* Convert from UTF8 to UTF16 for Windows wide-string filename purposes */
+/* Based on laszip mydefs.cpp by Martin Isenburg                        */
+#if defined(_MSC_VER)
+    len = MultiByteToWideChar(CP_UTF8, 0, name, -1, 0, 0);
+    if (len > 0) {
+        utf16 = (wchar_t *) calloc(sizeof(wchar_t), len);
+        if (utf16 != NULL) {
+            if (MultiByteToWideChar(CP_UTF8, 0, name, -1, utf16, len) > 0) {
+                fp = _wfopen(utf16, L"rb");
+            }
+            free(utf16);
+        }
+    }
+#else
     fp = fopen(name, "rb");
+#endif
     if (!fp) {
         error_cb(NULL, "Unable to open file");
         return NULL;
@@ -458,11 +482,31 @@ int ply_read(p_ply ply) {
  * ---------------------------------------------------------------------- */
 p_ply ply_create(const char *name, e_ply_storage_mode storage_mode,
         p_ply_error_cb error_cb, long idata, void *pdata) {
+#if defined(_MSC_VER)
+    wchar_t *utf16 = NULL;
+    int len = 0;
+#endif
     p_ply ply = NULL;
     FILE *fp = NULL;
     assert(name && storage_mode <= PLY_DEFAULT);
     if (error_cb == NULL) error_cb = ply_error_cb;
+
+/* Convert from UTF8 to UTF16 for Windows wide-string filename purposes */
+/* Based on laszip mydefs.cpp by Martin Isenburg                        */
+#if defined(_MSC_VER)
+    len = MultiByteToWideChar(CP_UTF8, 0, name, -1, 0, 0);
+    if (len > 0) {
+        utf16 = (wchar_t *) calloc(sizeof(wchar_t), len);
+        if (utf16 != NULL) {
+            if (MultiByteToWideChar(CP_UTF8, 0, name, -1, utf16, len) > 0) {
+                fp = _wfopen(utf16, L"wb");
+            }
+            free(utf16);
+        }
+    }
+#else
     fp = fopen(name, "wb");
+#endif
     if (!fp) {
         error_cb(ply, "Unable to create file");
         return NULL;
