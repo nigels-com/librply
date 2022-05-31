@@ -14,13 +14,12 @@ static int vertex_cb(p_ply_argument argument) {
 static int face_cb(p_ply_argument argument) {
     long length, value_index;
     ply_get_argument_property(argument, NULL, &length, &value_index);
-    if (value_index == -1) {
-        return 1;
-    }
-    if (value_index != length - 1) {
-        printf("%g ", ply_get_argument_value(argument));
-    } else {
-        printf("%g\n", ply_get_argument_value(argument));
+    if (value_index >= 0 && value_index <= length) {
+        if (value_index != length - 1) {
+            printf("%g ", ply_get_argument_value(argument));
+        } else {
+            printf("%g\n", ply_get_argument_value(argument));
+        }
     }
     return 1;
 }
