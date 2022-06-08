@@ -360,8 +360,8 @@ static int ply_read_header_magic(p_ply ply) {
 p_ply ply_open(const char *name, p_ply_error_cb error_cb,
         long idata, void *pdata) {
 #if defined(_MSC_VER)
-    wchar_t *utf16 = NULL;
-    int len = 0;
+    wchar_t *utf16_name = NULL;
+    int utf16_len = 0;
 #endif
     FILE *fp = NULL;
     p_ply ply;
@@ -371,14 +371,14 @@ p_ply ply_open(const char *name, p_ply_error_cb error_cb,
 /* Convert from UTF8 to UTF16 for Windows wide-string filename purposes */
 /* Based on laszip mydefs.cpp by Martin Isenburg                        */
 #if defined(_MSC_VER)
-    len = MultiByteToWideChar(CP_UTF8, 0, name, -1, 0, 0);
-    if (len > 0) {
-        utf16 = (wchar_t *) calloc(sizeof(wchar_t), len);
-        if (utf16 != NULL) {
-            if (MultiByteToWideChar(CP_UTF8, 0, name, -1, utf16, len) > 0) {
-                fp = _wfopen(utf16, L"rb");
+    utf16_len = MultiByteToWideChar(CP_UTF8, 0, name, -1, 0, 0);
+    if (utf16_len > 0) {
+        utf16_name = (wchar_t *) calloc(sizeof(wchar_t), utf16_len);
+        if (utf16_name != NULL) {
+            if (MultiByteToWideChar(CP_UTF8, 0, name, -1, utf16_name, utf16_len) > 0) {
+                fp = _wfopen(utf16_name, L"rb");
             }
-            free(utf16);
+            free(utf16_name);
         }
     }
 #else
@@ -483,8 +483,8 @@ int ply_read(p_ply ply) {
 p_ply ply_create(const char *name, e_ply_storage_mode storage_mode,
         p_ply_error_cb error_cb, long idata, void *pdata) {
 #if defined(_MSC_VER)
-    wchar_t *utf16 = NULL;
-    int len = 0;
+    wchar_t *utf16_name = NULL;
+    int utf16_len = 0;
 #endif
     p_ply ply = NULL;
     FILE *fp = NULL;
@@ -494,14 +494,14 @@ p_ply ply_create(const char *name, e_ply_storage_mode storage_mode,
 /* Convert from UTF8 to UTF16 for Windows wide-string filename purposes */
 /* Based on laszip mydefs.cpp by Martin Isenburg                        */
 #if defined(_MSC_VER)
-    len = MultiByteToWideChar(CP_UTF8, 0, name, -1, 0, 0);
-    if (len > 0) {
-        utf16 = (wchar_t *) calloc(sizeof(wchar_t), len);
-        if (utf16 != NULL) {
-            if (MultiByteToWideChar(CP_UTF8, 0, name, -1, utf16, len) > 0) {
-                fp = _wfopen(utf16, L"wb");
+    utf16_len = MultiByteToWideChar(CP_UTF8, 0, name, -1, 0, 0);
+    if (utf16_len > 0) {
+        utf16_name = (wchar_t *) calloc(sizeof(wchar_t), utf16_len);
+        if (utf16_name != NULL) {
+            if (MultiByteToWideChar(CP_UTF8, 0, name, -1, utf16_name, utf16_len) > 0) {
+                fp = _wfopen(utf16_name, L"wb");
             }
-            free(utf16);
+            free(utf16_name);
         }
     }
 #else
