@@ -1415,7 +1415,7 @@ static int oascii_float32(p_ply ply, double value) {
 
 static int oascii_float64(p_ply ply, double value) {
     if (value < -DBL_MAX || value > DBL_MAX) return 0;
-    return fprintf(ply->fp, "%g", value) > 0;
+    return fprintf(ply->fp, "%.3f", value) > 0;
 }
 
 static int obinary_int8(p_ply ply, double value) {
